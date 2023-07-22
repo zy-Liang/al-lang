@@ -1,7 +1,9 @@
 grammar;
 use crate::syntax::*;
 
-pub PlusMinus : Expr = {
+pub Expr : Expr = PlusMinus => <>;
+
+PlusMinus : Expr = {
     <l:Boxed<PlusMinus>> "+" <r:Boxed<Times>> => Expr::Plus(l, r),
     <l:Boxed<PlusMinus>> "-" <r:Boxed<Times>> => Expr::Minus(l, r),
     <res:Times> => res,
@@ -25,22 +27,4 @@ Boxed<Rule>: Box<Rule> = {
     <res:Rule> => Box::new(res),
 }
 
-F64: f64 = r"[0-9]+([.]?[0-9]+)" => <>.parse::<f64>().unwrap();
-
-// pub Expr: Expr = {
-//     <n:Num> => Num(n),
-//     UnOp,
-//     BinOp,
-// }
-
-// Num: f64 = r"[0-9]+([.]?[0-9]+)" => <>.parse::<f64>().unwrap();
-
-// UnOp: UnOp = {
-//     "-" <be:Boxed<Expr>> => Neg(be),
-// }
-
-// BinOp: BinOp = {
-//     <l:Boxed<Expr>> "+" <r:Boxed<Expr>> => Plus(l, r),
-//     <l:Boxed<Expr>> "-" <r:Boxed<Expr>> => Minus(l, r),
-//     <l:Boxed<Expr>> "*" <r:Boxed<Expr>> => Times(l, r),
-// }
+F64: f64 = r"[0-9]+([.]?[0-9]+)?" => <>.parse::<f64>().unwrap();
