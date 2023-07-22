@@ -1,0 +1,46 @@
+grammar;
+use crate::syntax::*;
+
+pub PlusMinus : Expr = {
+    <l:Boxed<PlusMinus>> "+" <r:Boxed<Times>> => Expr::Plus(l, r),
+    <l:Boxed<PlusMinus>> "-" <r:Boxed<Times>> => Expr::Minus(l, r),
+    <res:Times> => res,
+}
+
+Times : Expr = {
+    <l:Boxed<Times>> "*" <r:Boxed<Neg>> => Expr::Times(l, r),
+    <res:Neg> => res,
+}
+
+Neg : Expr = {
+    "-" <be:Boxed<Num>> => Expr::Neg(be),
+    <res: Num> => res,
+}
+
+Num: Expr = {
+    <res:F64> => Expr::Num(res),
+}
+
+Boxed<Rule>: Box<Rule> = {
+    <res:Rule> => Box::new(res),
+}
+
+F64: f64 = r"[0-9]+([.]?[0-9]+)" => <>.parse::<f64>().unwrap();
+
+// pub Expr: Expr = {
+//     <n:Num> => Num(n),
+//     UnOp,
+//     BinOp,
+// }
+
+// Num: f64 = r"[0-9]+([.]?[0-9]+)" => <>.parse::<f64>().unwrap();
+
+// UnOp: UnOp = {
+//     "-" <be:Boxed<Expr>> => Neg(be),
+// }
+
+// BinOp: BinOp = {
+//     <l:Boxed<Expr>> "+" <r:Boxed<Expr>> => Plus(l, r),
+//     <l:Boxed<Expr>> "-" <r:Boxed<Expr>> => Minus(l, r),
+//     <l:Boxed<Expr>> "*" <r:Boxed<Expr>> => Times(l, r),
+// }
