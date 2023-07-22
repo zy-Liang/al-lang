@@ -1,12 +1,15 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
+use crate::lexer::Lexer;
 use crate::parser;
 use crate::evaluator;
+use crate::syntax::Ctx;
 
 
 fn test(expr: &str) -> f64 {
-    let e = parser::ExprParser::new().parse(expr).unwrap();
+    let mut ctx = Ctx::default();
+    let e = parser::ExprParser::new().parse(expr, &mut ctx, Lexer::new(&expr)).unwrap();
     evaluator::evaluate(e)
 }
 

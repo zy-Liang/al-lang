@@ -1,11 +1,12 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
-use crate::{parser, syntax::Expr::{*, self}};
-
+use crate::{parser, syntax::Expr::{*, self}, lexer};
+use crate::syntax::Ctx;
 
 fn test(expr: &str) -> Expr {
-    parser::ExprParser::new().parse(expr).unwrap()
+    let mut ctx = Ctx::default();
+    parser::ExprParser::new().parse(expr, &mut ctx, lexer::Lexer::new(expr)).unwrap()
 }
 
 #[test]

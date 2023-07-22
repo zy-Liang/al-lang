@@ -8,5 +8,6 @@ pub fn evaluate(e: Expr) -> f64 {
         Expr::Plus(l, r) => evaluate(*l) + evaluate(*r),
         Expr::Minus(l, r) => evaluate(*l) - evaluate(*r),
         Expr::Times(l, r) => evaluate(*l) * evaluate(*r),
+        _ => todo!(),
     }
 }

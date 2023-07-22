@@ -1,7 +1,16 @@
-grammar;
-use crate::syntax::*;
+use crate::{syntax::*, lexer::*};
 
-pub Expr : Expr = PlusMinus => <>;
+grammar<'input, 'ctx>(
+    input: &'input str,
+    ctx: &'ctx mut Ctx,
+);
+
+pub Expr : Expr = Let => <>;
+
+Let : Expr = {
+    "let" <binder:Var> "=" <e1:Boxed<Let>> "in" <e2:Boxed<Let>> => Expr::Let{binder, e1, e2},
+    <res:PlusMinus> => res,
+}
 
 PlusMinus : Expr = {
     <l:Boxed<PlusMinus>> "+" <r:Boxed<Times>> => Expr::Plus(l, r),
@@ -22,6 +31,7 @@ Neg : Expr = {
 Paren : Expr = {
     "(" <e:Expr> ")" => e,
     <res:Num> => res,
+    Var => Expr::Var(<>),
 }
 
 Num: Expr = {
@@ -32,4 +42,23 @@ Boxed<Rule>: Box<Rule> = {
     <res:Rule> => Box::new(res),
 }
 
-F64: f64 = r"[0-9]+([.]?[0-9]+)?" => <>.parse::<f64>().unwrap();
+F64: f64 = <f:"Float"> => f.parse().unwrap();
+
+Var: String = <v:"Variable"> => v.to_string();
+
+extern {
+    type Location = usize;
+
+    enum Tok<'input> {
+        "let" => Tok::Let,
+        "in" => Tok::In,
+        "=" => Tok::Equals,
+        "+" => Tok::Plus,
+        "-" => Tok::Minus,
+        "*" => Tok::Times,
+        "(" => Tok::ParenOpen,
+        ")" => Tok::ParenClose,
+        "Float" => Tok::Float(<&'input str>),
+        "Variable" => Tok::Variable(<&'input str>),
+    }
+}
