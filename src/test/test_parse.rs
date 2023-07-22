@@ -99,3 +99,30 @@ fn t14() {
     println!("{}, {:?}", parse, res);
 }
 
+#[test]
+fn t15() {
+    let parse = "(1)";
+    let res = parser::ExprParser::new().parse(parse).unwrap();
+    println!("{}, {:?}", parse, res);
+}
+
+#[test]
+fn t16() {
+    let parse = "1+(1)";
+    let res = parser::ExprParser::new().parse(parse).unwrap();
+    println!("{}, {:?}", parse, res);
+}
+
+#[test]
+fn t17() {
+    let parse = "1+(1+1)";
+    let res = parser::ExprParser::new().parse(parse).unwrap();
+    println!("{}, {:?}", parse, res);
+}
+
+#[test]
+fn t18() {
+    let parse = "-(1+1)";
+    let res = parser::ExprParser::new().parse(parse).unwrap();
+    println!("{}, {:?}", parse, res);
+}

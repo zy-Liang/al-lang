@@ -16,7 +16,12 @@ Times : Expr = {
 
 Neg : Expr = {
     "-" <e:Boxed<Neg>> => Expr::Neg(e),
-    <res: Num> => res,
+    <res: Paren> => res,
+}
+
+Paren : Expr = {
+    "(" <e:Expr> ")" => e,
+    <res:Num> => res,
 }
 
 Num: Expr = {
