@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Expr {
     Num(f64),
     Neg(Box<Expr>),

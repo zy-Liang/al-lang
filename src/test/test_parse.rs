@@ -1,128 +1,191 @@
-use crate::parser;
+#![allow(unused_imports)]
+#![allow(dead_code)]
+
+use crate::{parser, syntax::Expr::{*, self}};
+
+
+fn test(expr: &str) -> Expr {
+    parser::ExprParser::new().parse(expr).unwrap()
+}
 
 #[test]
-
 fn t1() {
-    let parse = "1";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(test("1"), Num(1.0));
 }
 
 #[test]
 fn t2() {
-    let parse = "1.01";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(test("1.01"), Num(1.01));
 }
 
 #[test]
 fn t3() {
-    let parse = "-1.01";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("-1.01"), 
+        Neg(Box::new(Num(1.01)))
+    );
 }
 
 #[test]
 fn t4() {
-    let parse = "1+1";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("1+1"),
+        Plus(Box::new(Num(1.0)), Box::new(Num(1.0)))
+    );
 }
 
 #[test]
 fn t5() {
-    let parse = "1+1+1";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("1+1+1"),
+        Plus(
+            Box::new(
+                Plus(Box::new(Num(1.0)), Box::new(Num(1.0)))
+            ),
+            Box::new(Num(1.0))
+        )
+    );
 }
 
 #[test]
 fn t6() {
-    let parse = "1-1";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("1-1"), Minus(Box::new(Num(1.0)), Box::new(Num(1.0)))
+    );
 }
 
 #[test]
 fn t7() {
-    let parse = "1-1-1";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("1-1-1"),
+        Minus(
+            Box::new(
+                Minus(Box::new(Num(1.0)), Box::new(Num(1.0)))
+            ),
+            Box::new(Num(1.0))
+        )
+    );
 }
 
 #[test]
 fn t8() {
-    let parse = "1+1-1";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("1+1-1"),
+        Minus(
+            Box::new(
+                Plus(Box::new(Num(1.0)), Box::new(Num(1.0)))
+            ),
+            Box::new(Num(1.0))
+        )
+    );
 }
 
 #[test]
 fn t9() {
-    let parse = "1*1";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("1*1"), Times(Box::new(Num(1.0)), Box::new(Num(1.0)))
+    );
 }
 
 #[test]
 fn t10() {
-    let parse = "1*1*1";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("1*1*1"),
+        Times(
+            Box::new(
+                Times(Box::new(Num(1.0)), Box::new(Num(1.0)))
+            ),
+            Box::new(Num(1.0))
+        )
+    );
 }
 
 #[test]
 fn t11() {
-    let parse = "1*1+1";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("1*1+1"),
+        Plus(
+            Box::new(
+                Times(Box::new(Num(1.0)), Box::new(Num(1.0)))
+            ),
+            Box::new(Num(1.0))
+        )
+    );
 }
 
 #[test]
 fn t12() {
-    let parse = "1+1*1";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("1+1*1"),
+        Plus(
+            Box::new(Num(1.0)),
+            Box::new(
+                Times(Box::new(Num(1.0)), Box::new(Num(1.0)))
+            )
+        )
+    );
 }
 
 #[test]
 fn t13() {
-    let parse = "---1";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("---1"), 
+        Neg(Box::new(Neg(Box::new(Neg(Box::new(Num(1.0)))))))
+    );
 }
 
 #[test]
 fn t14() {
-    let parse = "1+1+1-1*1*-1";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("1+1+1-1*1*-1"),
+        Minus(
+            Box::new(
+                Plus(
+                    Box::new(Plus(Box::new(Num(1.0)), Box::new(Num(1.0)))), 
+                    Box::new(Num(1.0))
+                )
+            ), 
+            Box::new(
+                Times(
+                    Box::new(Times(Box::new(Num(1.0)), Box::new(Num(1.0)))), 
+                    Box::new(Neg(Box::new(Num(1.0))))
+                )
+            )
+        )
+    )
 }
 
 #[test]
 fn t15() {
-    let parse = "(1)";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(test("(1)"), Num(1.0));
 }
 
 #[test]
 fn t16() {
-    let parse = "1+(1)";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("1+(1)"), Plus(Box::new(Num(1.0)), Box::new(Num(1.0)))
+    );
 }
 
 #[test]
 fn t17() {
-    let parse = "1+(1+1)";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("1+(1+1)"),
+        Plus(
+            Box::new(Num(1.0)),
+            Box::new(
+                Plus(Box::new(Num(1.0)), Box::new(Num(1.0)))
+            )
+        )
+    );
 }
 
 #[test]
 fn t18() {
-    let parse = "-(1+1)";
-    let res = parser::ExprParser::new().parse(parse).unwrap();
-    println!("{}, {:?}", parse, res);
+    assert_eq!(
+        test("-(1+1)"),
+        Neg(
+            Box::new(Plus(Box::new(Num(1.0)), Box::new(Num(1.0))))
+        )
+    )
 }

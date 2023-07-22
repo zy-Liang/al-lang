@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cargo test test_eval -- --nocapture --test-threads 1
