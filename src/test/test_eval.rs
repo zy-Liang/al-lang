@@ -10,7 +10,7 @@ use crate::syntax::Ctx;
 fn test(expr: &str) -> f64 {
     let mut ctx = Ctx::default();
     let e = parser::ExprParser::new().parse(expr, &mut ctx, Lexer::new(&expr)).unwrap();
-    evaluator::evaluate(e)
+    evaluator::evaluate(e, &mut ctx)
 }
 
 #[test]

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 #[derive(Debug, PartialEq)]
 pub enum Expr {
     Var(String),
@@ -16,4 +18,5 @@ pub enum Expr {
 // let x = 1 + 2 in x + 1
 #[derive(Default, Debug)]
 pub struct Ctx {
+    pub lookup: HashMap<String, f64>,
 }
